@@ -34,9 +34,11 @@ pm.globals.set("token",token)
 接口加密：可以先在pre-request script中使用js解密
 ## 接口断言
 ### 状态断言
+```js
 pm.test("Status code is 200", function () {
     pm.response.to.have.status(200);
 });
+```
 ### 自定义断言
 ```js
 pm.test("返回体有对应字符串", function () {
