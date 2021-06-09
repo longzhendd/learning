@@ -1427,3 +1427,217 @@ outer()
 100
 ```
 
+## 面向对象
+### classmethod和staticmethod
+classmethod绑定类，staticmethod不与对象绑定，谁都能调用
+```
+#file:setings.py
+HOST='127.0.0.1'
+PORT=3306
+DB_PATH=r'C:\Users\Administrator\PycharmProjects\test\面向对象编程\test1\db'
+```
+```python
+import settings
+class MySQL:
+    def __init__(self,host,port):
+        self.host=host
+        self.port=port
+
+    @staticmethod
+    def from_conf():
+        return MySQL(settings.HOST,settings.PORT)
+    #调用这个结果：就不告诉你
+
+    # @classmethod #哪个类来调用,就将哪个类当做第一个参数传入
+    # def from_conf(cls):
+    #     return cls(settings.HOST,settings.PORT)
+    #调用这个结果：<127.0.0.1:3306>
+
+    def __str__(self):
+        return '就不告诉你'
+
+class Mariadb(MySQL):
+    def __str__(self):
+        return '<%s:%s>' %(self.host,self.port)
+
+
+m=Mariadb.from_conf()
+print(m) #我们的意图是想触发Mariadb.__str__,但是结果触发了MySQL.__str__的执行，打印就不告诉你：
+```
+
+### isinstance(obj,cls)和issubclass(sub,super)
+```python
+# 判断是否是类的对象，返回bool类型：false/true
+class Foo(object):
+    pass
+obj=Foo()
+print(isinstance(obj,Foo))
+```
+```python
+#判断是否是对应类的子类，返回bool类型：false/true
+class Foo(object):
+    pass
+class Bar(Foo):
+    pass
+print(issubclass(Bar, Foo))
+```
+
+### 反射
+1. 反射的概念是由Smith在1982年首次提出的，主要是指程序可以访问、检测和修改它本身状态或行为的一种能力（自省）
+2. python中一切事物皆对象，都能使用反射
+```python
+#检测对象属性
+class company:
+    address='shenzheng'
+    def __init__(self,name,queue):
+        self.name=name
+        self.queue=queue
+    def send_salary(self):
+        print('%s本月没有发薪水'%self.name)
+    def send_reward(self):
+        print('%s今年无奖金'%self.name)
+
+a=company('zhongruan',10000)
+print(hasattr(a,'name'))
+print(hasattr(a,'send_salary'))
+
+#获取属性
+#变量属性
+b=getattr(a,'name')
+print(b)
+#函数属性
+func=getattr(a,'send_salary')
+func()
+#获取不存在属性
+# print(getattr(a,'XXX'))
+
+#设置属性
+setattr(a,'sb',True)
+setattr(a,'show_name',lambda self:self.name+'sb')
+print(a.__dict__)
+print(a.show_name(a))
+
+#删除属性
+delattr(a,'queue')
+delattr(a,'show_name')
+#删除不存在的
+# delattr(a,'sfdsafa')
+print(a.__dict__)
+```
+
+```python
+#检测类属性
+class Foo():
+    staticfeild='me'
+    def __init__(self):
+        self.name='zhenlong'
+    def func(self):
+        return 'func'
+    @staticmethod
+    def bar():
+        return 'bar'
+
+print(getattr(Foo,'staticfeild'))
+print(getattr(Foo, 'func'))
+print(getattr(Foo, 'bar'))
+```
+```python
+#检测模块成员
+#!./moudle_test.py
+def test():
+	print('from the test')
+
+#!./index.py
+'''
+目录：
+module_test.py
+index.py
+'''
+import module_test as obj
+print(hasattr(obj,'test'))
+func=getattr(obj,'test')
+func()
+#结果：True
+from the test
+```
+
+```python
+#检测当前模块
+
+​```python
+current_module=__import__(__name__)
+x=111
+print(hasattr(current_module,"x"))
+print(getattr(current_module,"x")) 
+#结果：
+True
+111
+```
+
+3. 反射的好处
+	> 实现可插拔机制
+	```python
+	# _*_coding:utf-8 _*_
+	#!./module_test.py
+	class FtpClient:
+    '''ftp客户端,但是还么有实现具体的功能'''
+    def __init__(self,addr):
+        print('正在连接服务器[%s]' %addr)
+        self.addr=addr
+    
+   # _*_coding:utf-8 _*_
+	#!./test.py
+	from module_test import FtpClient
+	f1=FtpClient('192.168.1.1')
+	if hasattr(f1,'get'):
+    	func_get=getattr(f1,'get')
+    	func_get()
+	else:
+    	print('---->不存在此方法')
+    	print('处理其他的逻辑')
+	```
+	> **动态导入模块(现在不是很懂)**
+	```python
+	import importlib
+	importlib.import_module('import_lib.metaclass')
+	```
+
+
+### \_\_setattr\_\_,\_\_delattr\_\_,\_\_getattr\_\_
+```python
+class Foo:
+    x=1
+    def __init__(self,y):
+        self.y=y
+
+    def __getattr__(self, item):
+        print('----> from getattr:你找的属性不存在')
+
+
+    def __setattr__(self, key, value):
+        print('----> from setattr')
+        # self.key=value #这就无限递归了,你好好想想
+        # self.__dict__[key]=value #应该使用它
+
+    def __delattr__(self, item):
+        print('----> from delattr')
+        # del self.item #无限递归了
+        self.__dict__.pop(item)
+
+#__setattr__添加/修改属性会触发它的执行
+f1=Foo(10)
+print(f1.__dict__) # 因为你重写了__setattr__,凡是赋值操作都会触发它的运行,你啥都没写,就是根本没赋值,除非你直接操作属性字典,否则永远无法赋值
+f1.z=3
+print(f1.__dict__)
+
+#__delattr__删除属性的时候会触发
+f1.__dict__['a']=3#我们可以直接修改属性字典,来完成添加/修改属性的操作
+del f1.a
+print(f1.__dict__)
+
+#__getattr__只有在使用点调用属性且属性不存在的时候才会触发
+f1.xxxxxx
+```
+
+### property
+静态属性property本质是实现了get，set，delete
