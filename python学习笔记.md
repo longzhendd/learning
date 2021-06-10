@@ -1641,3 +1641,277 @@ f1.xxxxxx
 
 ### property
 静态属性property本质是实现了get，set，delete
+```python
+class Ts():
+    @property
+    def case(self):
+        print('get运行调用')
+    @case.setter
+    def case(self,value):
+        print('set运行调用')
+    @case.deleter
+    def case(self):
+        print('delete运行调用')
+#只有在属性case定义property后才能定义case.setter,case.deleter
+f=Ts()
+f.case  #调用函数属性不需要括号和调用变量属性一样
+f.case='lastone'
+del f.case
+
+#结果
+get运行调用
+set运行调用
+delete运行调用
+```
+
+实例：name类型检查
+```python
+class people():
+    def __init__(self,name):
+        self.name=name
+
+    @property
+    def name(self):
+        print('get--------')
+        return self.douniwan
+    @name.setter
+    def name(self,value):
+        print('set------')
+        if not isinstance(value,str):
+            raise TypeError('必需为字符串')
+        self.douniwan=value
+
+    @name.deleter
+    def name(self):
+        print('delete-----------')
+        del self.douniwan
+
+p=people('zl')
+p.name=96
+```
+### \_\_setitem\_\_,\_\_getitem\_\_,\_\_delitem\_\_
+
+```python
+class ts():
+    def __init__(self,name):
+        self.name=name
+
+    def __getitem__(self, item):
+        print(self.__dict__[item])
+
+    def __setitem__(self, key, value):
+        self.__dict__[key]=value
+
+    def __delitem__(self, key):
+    	'''使用索引进行删除时调用'''
+        print('del obj[key]时执行')
+        self.__dict__.pop(key)
+
+    def __delattr__(self, item):
+    	'''使用删除属性时调用'''
+        print('del obj.key时执行')
+        self.__dict__.pop(item)
+
+t=ts('sb')
+t['age']=13
+t['age1']=18
+print(t.__dict__)
+del t.age1
+print(t.__dict__)   #del obj.key时执行 {'name': 'sb', 'age': 13}
+del t['age']
+print(t.__dict__)   #del obj[key]时执行 {'name': 'sb'}
+t['name']='zl'
+print(t.__dict__)   #{'name': 'zl'}
+```
+
+### \_\_str\_\_,\_\_repr\_\_,\_\_format\_\_
+
+```python
+'''__str__和__repr__'''
+format_dict={
+    'nat':'{obj.name}-{obj.addr}-{obj.type}',#学校名-学校地址-学校类型
+    'tna':'{obj.type}:{obj.name}:{obj.addr}',#学校类型:学校名:学校地址
+    'tan':'{obj.type}/{obj.addr}/{obj.name}',#学校类型/学校地址/学校名
+}
+class School:
+    def __init__(self,name,addr,type):
+        self.name=name
+        self.addr=addr
+        self.type=type
+
+    def __repr__(self):
+        return 'School(%s,%s)' %(self.name,self.addr)
+    def __str__(self):
+        return '(%s,%s)' %(self.name,self.addr)
+
+    def __format__(self, format_spec):
+        # if format_spec
+        if not format_spec or format_spec not in format_dict:
+            format_spec='nat'
+        fmt=format_dict[format_spec]
+        return fmt.format(obj=self)
+
+s1=School('oldboy1','北京','私立')
+print('from repr: ',repr(s1))
+print('from str: ',str(s1))
+print(s1)
+```
+```python
+'''__format__用法'''
+date_dic={
+    'ymd':'{0.year}:{0.month}:{0.day}',
+    'dmy':'{0.day}/{0.month}/{0.year}',
+    'mdy':'{0.month}-{0.day}-{0.year}',
+}
+class Date:
+    def __init__(self,year,month,day):
+        self.year=year
+        self.month=month
+        self.day=day
+
+    def __format__(self, format_spec):
+        if not format_spec or format_spec not in date_dic:
+            format_spec='ymd'
+        fmt=date_dic[format_spec]
+        return fmt.format(self)
+
+d1=Date(2016,12,29)
+print(format(d1))
+print('{:mdy}'.format(d1))
+```
+
+### \_\_slots\_\_
+节省内存
+```python
+class Foo:
+    __slots__=['name','age']
+
+f1=Foo()
+f1.name='alex'
+f1.age=18
+print(f1.__slots__)
+
+f2=Foo()
+f2.name='egon'
+f2.age=19
+print(f2.__slots__)
+
+print(Foo.__dict__)
+#f1与f2都没有属性字典__dict__了,统一归__slots__管,节省内存
+```
+
+### \_\_doc\_\_
+```python
+class Foo():
+    '描述信息'
+    pass
+
+class Bar(Foo):
+    pass
+'''__doc__:获取描述信息'''
+print(Foo.__doc__)
+print(Bar.__doc__)
+```
+### \_\_next\_\_和\_\_iter\_\_
+```python
+class Range():
+    def __init__(self,n,stop,step):
+        self.n=n
+        self.stop=stop
+        self.step=step
+
+    def __next__(self):
+        if self.n>=self.stop:
+            raise StopIteration
+        x=self.n
+        self.n+=self.step
+        return x
+
+    def __iter__(self):
+        return self
+f=Range(1,7,3)
+print(f.__next__())
+print(next(f))
+```
+### \_\_module和\_\_class\_\_
+```python
+'''#!./module_test.py'''
+class C():
+    def __init__(self):
+        self.name='nice'
+        
+'''#! ./test.py'''
+from module_test import C
+obj=C()
+print(obj.__class__)	#操作对象类来源
+print(obj.__module__)	#操作对象是哪个模块
+#结果：
+<class 'module_test.C'>
+module_test
+```
+### \_\_del\_\_
+作用：可用于回收系统资源，在对象被删除前向操作系统发起关闭数据库链接的系统调用，回收资源（同文件调用）
+```python
+class Test():
+    def __del__(self):
+        print('use me!')
+
+T=Test()
+print('----------')
+#结果
+----------
+use me!	#在最后调用了__del__功能
+```
+
+### \_\_enter\_\_和\_\_exit\_\_
+好处：
+1. 在__exit__中自定义自动释放资源机制
+2. 在需要管理一些资源比如文件，网络连接和锁的编程环境中，可以在__exit__中定制自动释放资源的机制，你无须再去关系这个问题，这将大有用处
+```python
+class Open():
+    def __init__(self,name):
+        self.name=name
+    def __enter__(self):
+        print('with出现时触发')
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print('with中关闭执行')
+        print('kai',exc_type)
+        print(exc_val)
+        print(exc_tb)
+        return True #
+
+with Open('a.txt') as f:
+    print('action')
+    raise AttributeError('***撒打发点三***')
+print('0'*100)  #__exit__返回值为True,那么异常会被清空,with后的语句正常执行
+```
+### \_\_call\_\_
+对象+括号触发
+```python
+class Foo():
+    def __init__(self):
+        pass
+    def __call__(self, *args, **kwargs):
+        print('__call__')
+
+obj=Foo()
+obj()   # __call__
+```
+### metaclass
+说明:继承了type类的才能算是元类
+```python
+class Mymeta(type): #只有继承了type类才能称之为一个元类，否则就是一个普通的自定义类
+    pass
+
+class Teacher(object,metaclass=Mymeta): # OldboyTeacher=Mymeta('OldboyTeacher',(object),{...})
+    school='tinsu'
+
+    def __init__(self,name,age):
+        self.name=name
+        self.age=age
+
+    def say(self):
+        print('%s welcome' %self.name)
+print(type(Teacher))
+```
