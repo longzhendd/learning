@@ -183,5 +183,383 @@ byte(类似uint8)/rune(类似 int32)/uint(32 或 64 位)/int(与 uint 一样大�
 	7. 接口类型
 	8. Map类型
 
-这是一个test
+## **go 语言变量**
+### 变量声明
+* 指定变量类型
+* 自行判断变量类型
+* 省略var，使用`:=`左侧没有声明新的变量，产生编译错误
+	[!] `:=`用法只能用在函数中
+### 多变量声明
+```go
+package main
+import "fmt"
 
+	
+var j,k int
+var (
+	x int 
+	y bool
+)
+var g,h int =1,2
+var m,n =123,"hello"
+func main(){
+	var a string = "robot"
+	fmt.Println(a)
+	
+	var i int
+	var f float64
+	var b bool
+	var s string
+	fmt.Printf("%d %v %v %q\n",i,f,b,s)
+	//fmt.Println(i,f,b,s)
+	//fmt.Print(i,f,b,s)
+	
+	var d=true
+	fmt.Println(d)
+	
+	intvar :=10	//只能出现在函数体
+	fmt.Println(intvar)
+	fmt.Println(j,k,x,y,g,h,m,n)
+}
+```
+
+### 注意事项
+
+* 变量交换，要求两变量类型相同。`a,b=b,a`
+* 空白标识符`_`用于被抛弃 如`_,b=5,7中5被抛弃`
+* `_`只写变量不读
+* 空白标识符在函数返回值是使用
+```go
+package main
+import "fmt"
+
+func main(){
+	_,numb,strs :=numbers()
+	fmt.Println(numb,strs)
+}
+
+func numbers()(int,int,string){
+	a,b,c:=1,2,"str"
+	return a,b,c
+}
+//结果
+2 str //抛弃了a=1
+```
+
+## **go语言常量**
+`const identifier [type] = value`
+* 显式类型定义：`const b string="abc"`
+* 隐式类型定义：`const b ="abc"`
+* 多类型声明：`const name1,name2,name3 =value1,value2,value3`
+```
+package main
+
+import "fmt"
+const (
+    Unknown = 0
+    Female = 1
+    Male = 2
+)
+
+func main() {
+   const LENGTH int = 10
+   const WIDTH int = 5  
+   var area int
+   const a, b, c = 1, false, "str" //多重赋值
+
+   area = LENGTH * WIDTH
+   fmt.Printf("面积为 : %d", area)
+   println()
+   println(a, b, c)  
+   println(Unknown,Female,Male)
+}
+```
+### iota
+特殊常量
+用法
+```go
+package main
+
+import "fmt"
+const (
+    i=1<<iota
+    j=3<<iota
+    k
+    l
+)
+
+func main() {
+    fmt.Println("i=",i)//1
+    fmt.Println("j=",j)//011左移1位110，换算为10进制：6
+    fmt.Println("k=",k)//011左移2位1100，换算为10进制：12
+    fmt.Println("l=",l)//011左移3位11000，换算为10进制：24
+}
+//结果
+i= 1
+j= 6
+k= 12
+l= 24
+```
+### 运算符
+* 算术运算符
+```
+package main
+import "fmt"
+
+func main(){
+	var a,b int =21,10
+	var c int
+	c=a-b
+	fmt.Printf("第一行c值%d,over\n",c)
+	c=a+b
+	fmt.Printf("第二行c值%d,over\n",c)
+	c=a*b
+	fmt.Printf("第三行c值%d,over\n",c)
+	c=a/b
+	fmt.Printf("第四行c值%d,over\n",c)
+	c=a%b
+	fmt.Printf("第五行c值%d,over\n",c)
+}
+```
+
+* 关系运算符
+```
+package main
+import "fmt"
+
+func main(){
+	var a,b int =21,10
+	if(a==b){
+		fmt.Printf("a等于b\n")
+	}else{
+		fmt.Printf("a不等于b\n")
+	}
+	if(a>b){
+		fmt.Printf("a大于b\n")
+	}else{
+		fmt.Printf("a不大于b\n")
+	}
+}
+```
+* 逻辑运算符
+`&&`,`||`,`!`:与，或，非
+```
+package main
+import "fmt"
+
+func main(){
+	var a,b bool =true,false
+	if(a&&b){
+		fmt.Printf("true\n")
+	}
+	if(a||b){
+		fmt.Printf("true\n")
+	}
+   if ( !(a && b) ) {
+      fmt.Printf("第四行 - 条件为 true\n" )
+   }
+}
+```
+* 位运算符
+`&` `|` `^` `>>` `<<` 与、或、异或、右移、左移
+```
+package main
+
+import "fmt"
+
+func main(){
+	var a uint =60	/*60=0011 1100*/
+	var b uint =13	/*13=0000 1101*/
+	var c uint =0
+	
+	c=a&b
+	fmt.Printf("第一行%d\n",c)
+	
+	c=a|b
+	fmt.Printf("第二行%d\n",c)
+	
+	c=a^b
+	fmt.Printf("第三行%d\n",c)
+	
+	c=a<<2
+	fmt.Printf("第四行%d\n",c)
+	
+	c=a>>2
+	fmt.Printf("第五行%d\n",c)
+}
+```
+* 赋值运算符
+、、、
+package main
+
+import "fmt"
+
+func main() {
+   var a int = 21
+   var c int
+
+   c =  a
+   fmt.Printf("第 1 行 - =  运算符实例，c 值为 = %d\n", c )
+
+   c +=  a
+   fmt.Printf("第 2 行 - += 运算符实例，c 值为 = %d\n", c )
+
+   c -=  a
+   fmt.Printf("第 3 行 - -= 运算符实例，c 值为 = %d\n", c )
+
+   c *=  a
+   fmt.Printf("第 4 行 - *= 运算符实例，c 值为 = %d\n", c )
+
+   c /=  a
+   fmt.Printf("第 5 行 - /= 运算符实例，c 值为 = %d\n", c )
+
+   c  = 200;
+
+   c <<=  2
+   fmt.Printf("第 6行  - <<= 运算符实例，c 值为 = %d\n", c )
+
+   c >>=  2
+   fmt.Printf("第 7 行 - >>= 运算符实例，c 值为 = %d\n", c )
+
+   c &=  2
+   fmt.Printf("第 8 行 - &= 运算符实例，c 值为 = %d\n", c )
+
+   c ^=  2
+   fmt.Printf("第 9 行 - ^= 运算符实例，c 值为 = %d\n", c )
+
+   c |=  2
+   fmt.Printf("第 10 行 - |= 运算符实例，c 值为 = %d\n", c )
+
+}
+、、、
+* 其他
+
+## 条件语句
+`if-else`语句
+```go
+package main
+import "fmt"
+
+func main(){
+	var a int=30
+	if a<20{
+		fmt.Printf("a小于20\n")
+	}else{
+		fmt.Printf("a大于20\n")
+		}
+	fmt.Printf("a的值为%d\n",a)
+}
+```
+`switch`语句
+```go
+package main
+
+import "fmt"
+
+func main(){
+	var grade string="B"
+	var marks int =90
+	
+	switch marks{
+		case 90: grade="A"
+		case 80: grade="B"
+		case 50,60,70: grade="C"
+		default: grade="D"
+	}
+	
+	switch{
+		case grade =="A":
+			fmt.Printf("优秀\n")
+		case grade =="B":
+			fmt.Printf("良好\n")
+		case grade=="D":
+			fmt.Printf("及格\n")
+		case grade =="F":
+			fmt.Printf("不及格\n")
+		default:
+		fmt.Printf("差\n");
+	}
+	fmt.Printf("你的等级是%s\n",grade)
+}
+```
+`type-switch`
+```go
+package main
+
+import "fmt"
+
+func main(){
+	var x interface{}
+	
+	switch i :=x.(type){
+		case nil:
+			fmt.Printf("x类型%T",i)
+		case int:
+			fmt.Printf("x是int类型")
+		case float64:
+			fmt.Printf("x是float类型")
+		case func(int) float64:
+			fmt.Printf("x是func(int)型")
+		case bool,string:
+			fmt.Printf("x是bool类型")
+		default:
+			fmt.Printf("未知型")
+	}
+}
+```
+`fallthrough`
+1. 
+```go
+package main
+
+import "fmt"
+
+func main() {
+
+    switch {
+    case false:
+            fmt.Println("1、case 条件语句为 false")
+            fallthrough
+    case true:
+            fmt.Println("2、case 条件语句为 true")
+            fallthrough
+    case false:
+            fmt.Println("3、case 条件语句为 false")
+            fallthrough
+    case true:
+            fmt.Println("4、case 条件语句为 true")
+    case false:
+            fmt.Println("5、case 条件语句为 false")
+            fallthrough
+    default:
+            fmt.Println("6、默认 case")
+    }
+}
+```
+` break`
+```
+//可以终止语句
+switch{
+    case 1:
+    ...
+    if(...){
+        break
+    }
+
+    fallthrough // 此时switch(1)会执行case1和case2，但是如果满足if条件，则只执行case1
+
+    case 2:
+    ...
+    case 3:
+}
+
+```
+## 循环语句
+
+## 函数
+## 变量作用域
+## 数组
+## 指针
+## 结构体
+## 切片
+## 范围
