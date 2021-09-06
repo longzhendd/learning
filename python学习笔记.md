@@ -1915,3 +1915,6 @@ class Teacher(object,metaclass=Mymeta): # OldboyTeacher=Mymeta('OldboyTeacher',(
         print('%s welcome' %self.name)
 print(type(Teacher))
 ```
+
+## 线程、进程、协程
+
