@@ -1428,6 +1428,43 @@ outer()
 ```
 
 ## 面向对象
+### 方法重写
+```python
+class Parent():
+    def myMethod(self):
+        print('父类')
+
+class Child(Parent):
+    # def myMethod(self):
+    #     print('子类')
+    pass
+c= Child()
+c.myMethod()
+```
+### 私有方法
+```python
+class JustCounter:
+    __secretCount = 0  # 私有变量
+    publicCount = 0  # 公开变量
+
+    def count(self):
+        self.__secretCount += 1
+        self.publicCount += 1
+        print(self.__secretCount)
+
+
+counter = JustCounter()
+counter.count()
+# counter.count()
+# print(counter.publicCount)
+print(counter.__secretCount)    #报错，实例不能访问私有变量
+print(counter._JustCounter__secretCount)    #使用 object._className__attrName（ 对象名._类名__私有属性名 ）访问属性
+```
+### 单下划线、双下划线、头尾双下划线说明
+* `__foo__`: 定义的是特殊方法，一般是系统定义名字 ，类似 `__init__()` 之类的
+* `_foo`: 以单下划线开头的表示的是 protected 类型的变量，即保护类型只能允许其本身与子类进行访问，不能用于 `from module import *`
+* `__foo`: 双下划线的表示的是私有类型(private)的变量, 只能是允许这个类本身进行访问了
+
 ### classmethod和staticmethod
 classmethod绑定类，staticmethod不与对象绑定，谁都能调用
 ```
