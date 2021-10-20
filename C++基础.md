@@ -1,8 +1,8 @@
 [TOC]
 [学习网站链接]: https://www.learncpp.com/
 
-## 基础
-### 语言与程序结构
+## 一、基础
+### 1.1语言与程序结构
 #### Q&A
 1. 什么是语句？
 答:是计算机程序中的一个指令，它告诉计算机去执行一个操作
@@ -19,14 +19,14 @@
 7. 什么是C++标准库？
 答：库文件是可打包复用在其他程序的预编译代码集合，c++标准库是c++语言附加库，包含一些附加功能可被用于你的程序
 
-### 注释
+### 1.1注释
 ```c++
 单行注释
 //单行
 多行注释
 /*多行*/
 ```
-### 对象和变量
+### 1.3对象和变量
 1. 一般程序中对象通常指变量、内存中的数据结构、或者函数，c++中对象不包括函数
 2. 变量实例化 int x;
 3. 数据类型（int，double等）
@@ -50,7 +50,7 @@ double b;
 6. 什么是整数？
 答：没有小数部分写入数字
 
-### 变量赋值和初始化
+### 1.4变量赋值和初始化
 #### 变量赋值
 ```C++
 int width;
@@ -91,7 +91,7 @@ int e{9},f{10};
 2. 使用什么形式初始化？
 答：直接使用列表初始化
 
-### iostream简介：cout、cin、endl
+### 1.5iostream简介：cout、cin、endl
 #### std::cout
 ```
 //将文本输出到终端
@@ -102,5 +102,207 @@ int main()
 	return 0;
 }
 ```
-#### std::end1
-#### std::cin
+#### std::end1 vs '\n'
+
+```c++
+{
+	std::cout << "hello world" << std::end1;
+	/*std::end1换行后会进行刷新但是std::cout输出本来就好刷新输出*/
+	std::cout << "hello world" << '\n'; //'\n'不会进行多余刷新，性能更好
+	return 0;
+}
+```
+
+#### std::cin 
+```c++
+#include <iostream>
+int main()
+{
+	int x{}
+	std::cin >> x; //从控制台获取数值并保存到变量x
+	std::cout << "you entered:" << x << '\n'
+}
+```
+
+### 1.7关键词和命名标识符
+#### 关键词
+在c++中有特殊含义
+#### 命名标识符
+* 标识符不能是关键字。保留关键字
+* 标识符只能由字母（小写或大写）、数字和下划线字符组成。这意味着名称不能包含符号（下划线除外）或空格（空格或制表符）
+* 标识符必须以字母（小写或大写）或下划线开头。它不能以数字开头
+* C++ 区分大小写，因此区分大小写字母。 `nvalue`不同于`nValue`不同于 不同于`NVALUE`
+```c++
+/*变量命名,小写字母开头，如果是一个词则全是小写*/
+int value;
+int my_variable_name;//多词用_分隔
+int my_variable_name();
+int myVariableNmae;//后续第一个词大写形式
+int myVariableNmae();
+/**/
+```
+### 1.8空格和基本格式
+#### 空格
+1. 空格缩进在c++中没有要求，分成两行也能编译（输出字符串除外）
+```c++
+std::cout << "helllo
+			world"//not allowed
+```
+#### 基本格式
+	* 可以使用制表符或空格进行缩进
+	* 函数形式
+	```c++
+	int main()
+	{
+		std::cout<<"helloworld";
+	}
+	```
+	* 花括号内的每个语句都应该从它所属函数的左大括号开始一个制表符
+	* 每行不超过80字符
+	* 运算符拆分长行，运算符放在下一行开头
+	```c++
+	std::cout << 3+4
+		+5+6
+		*7*8;
+	```
+	* 通过对齐值或注释或在代码块之间添加间距，使用空格使您的代码更易于阅读
+
+### 1.9常量和运算符
+#### 常量
+常量的值不可变，变量的值可变
+```c++
+std::cout << "Hello world!";//“hello world！”是常量
+int x{ 5 };//5是常量
+```
+#### 运算符
+```
+加减乘除：+-*/
+赋值:=
+插入提取:<< >>
+链式操作符：std::cout << 1+2*3*4;
+```
+
+### 1.10表达式介绍
+#### Q&A
+1. 什么是表达式？
+答：表达式被执行时，每一项会被计算，直到剩单个值为止，该值为表达式结果
+```
+2               // 2 is a literal that evaluates to value 2
+"Hello world!"  // "Hello world!" is a literal that evaluates to text "Hello world!"
+x               // x is a variable that evaluates to the value of x
+2 + 3           // 2 + 3 uses operator + to evaluate to value 5
+x = 2 + 3       // 2 + 3 evaluates to value 5, which is then assigned to variable x
+std::cout << x  // x evaluates to the value of x, which is then printed to the console
+常量的值是自身，变量的值是value
+
+```
+2. 什么是表达式语句？
+答：由表达式+分号组成的语句，当语句被执行，表达式被计算
+
+### 1.12总结
+#### Q&A
+1. 初始化和赋值区别？
+答：初始化是在变量创建时给初始值，赋值是创建后给变量一个值
+2. 什么时候会发生未定义行为？后果是什么？
+答：没有按c++语言规范做事，可能会crash，产生错误
+
+## 二、函数和文件
+### 2.1函数介绍
+
+return为函数提供一种将值返回给调用者的方法
+
+函数提供一种减少冗余程序的方法
+
+#### 定义函数示例
+```c++
+return-type identifier() // 用函数名替换的标识符
+{
+// 你的代码在这里
+}
+/*
+1. return-type:返回类型；void表示不返回；int表示返回整数
+2. 函数名：identifier
+3. 标识符后面加()告诉编译器我们在定义函数
+4. 花括号+中间语句是函数体*/
+```
+#### 函数多次调用and函数调用函数
+```c++
+#include <iostream>
+
+void doB()
+{
+    std::cout << "In doB()\n";
+}
+
+void doA()
+{
+    std::cout << "Starting doA()\n";
+    doB();
+    std::cout << "Ending doA()\n";
+}
+
+int main()
+{
+    std::cout << "Starting main()\n";
+    doA();
+    doB();
+    doB();
+    std::cout << "Ending main()\n";
+    return 0;
+}
+```
+#### 注意
+c++函数不支持嵌套函数
+
+### 2.2函数返回值
+
+#### 返回值
+```c++
+#include <iostream>
+
+int getValueFromUser()
+{
+    int num{};
+    std::cin>> num;
+    return num;//返回值
+}
+int main()
+{
+    int num{getValueFromUser()};
+    std::cout << "double is " << 2*num <<'\n';
+    return 0;
+}
+```
+#### 无效返回值
+```c++
+void doPrint() // void is the return type
+{
+    std::cout << "In doPrint()" << '\n';//返回类型是void，表示不需要返回值
+}
+```
+#### 函数重用
+
+减少冗余代码
+
+```c++
+#include <iostream>
+
+int getValueFromUser()
+{
+ 	std::cout << "Enter an integer: ";
+	int input{};
+	std::cin >> input;
+
+	return input;
+}
+
+int main()
+{
+    int x{ getValueFromUser() }; // first call to getValueFromUser
+    int y{ getValueFromUser() }; // second call to getValueFromUser
+
+    std::cout << x << " + " << y << " = " << x + y << '\n';
+
+    return 0;
+}
+```
