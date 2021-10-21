@@ -306,3 +306,78 @@ int main()
     return 0;
 }
 ```
+
+### 2.3函数参数和实参
+```c++
+#include <iostream>
+
+int doubleNumber(int x)
+{
+    return 2*x;
+}
+
+int main()
+{
+    int x{};
+    std::cin >> x;
+    std::cout << doubleNumber(x) << '\n';
+    return 0;
+}
+```
+### 2.4局部作用域
+### 2.5前向声明
+### 2.6多文件程序
+### 2.7命名空间
+### 2.8预处理器
+一旦预处理器完成，该文件中所有定义的标识符都将被丢弃。这意味着指令仅从定义点到定义它们的文件末尾有效。在一个代码文件中定义的指令不会影响同一项目中的其他代码文件
+```c++
+#include <iostream> //预处理
+#define PRINT_JOE   //宏定义
+
+int main()
+{
+#ifdef PRINT_JOE    //条件编译
+    std::cout << "Joe\n";
+#endif 
+
+#ifdef PRINT_BOB
+    std::cout << "Bob\n";
+#endif
+    return 0;
+}
+```
+### 2.9头文件
+1. 扩展名后缀是（xxx.h）
+2. 偶尔会看到它们带有 .hpp 扩展名或根本没有扩展名
+3. 头文件的主要目的是将声明传播到代码文件
+```c++
+//add.h文件
+int add(int x, int y);
+//main.cpp
+#include "add.h" 
+#include <iostream>
+
+int main()
+{
+    std::cout << "The sum of 3 and 4 is " << add(3, 4) << '\n';
+    return 0;
+}
+//add.cpp
+#include "add.h"
+
+int add(int x, int y)
+{
+    return x + y;
+}
+```
+
+### 2.10头部保护
+1. 解决重复定义问题
+```c++
+#ifndef ADD_H
+#define ADD_H
+
+int add(int x, int y);
+
+#endif
+```
