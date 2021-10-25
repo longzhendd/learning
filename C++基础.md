@@ -381,3 +381,74 @@ int add(int x, int y);
 
 #endif
 ```
+
+## 三、调试
+## 四、基本数据类型
+```c++
+#include <iostream>
+
+int main()
+{
+    int x{};
+    std::cout << "x is " << sizeof(x) << " bytes\n";//sizeof查看内存大小
+
+    return 0;
+}
+```
+```c++
+//unsigned定义的整数不会溢出，会环绕超出1位输出0，超出2输出1，超出3输出2
+#include <iostream>
+
+int main()
+{
+    unsigned short x{ 65535 }; // largest 16-bit unsigned value possible
+    std::cout << "x was: " << x << '\n';
+
+    x = 65536; // 65536 is out of our range, so we get wrap-around
+    std::cout << "x is now: " << x << '\n';
+
+    x = 65537; // 65537 is out of our range, so we get wrap-around
+    std::cout << "x is now: " << x << '\n';
+
+    return 0;
+}
+/*结果
+x was: 65535
+x is now: 0
+x is now: 1
+*/
+```
+```c++
+//反向超出环绕输出:-1输出最大位，-2输出最大位减一
+#include <iostream>
+
+int main()
+{
+    unsigned short x{ 0 }; // smallest 2-byte unsigned value possible
+    std::cout << "x was: " << x << '\n';
+
+    x = -1; // -1 is out of our range, so we get wrap-around
+    std::cout << "x is now: " << x << '\n';
+
+    x = -2; // -2 is out of our range, so we get wrap-around
+    std::cout << "x is now: " << x << '\n';
+
+    return 0;
+/*
+x was: 0
+x is now: 65535
+x is now: 65534
+*/
+}
+```
+```c++
+#include <cstddef> // std::size_t
+#include <iostream>
+
+int main()
+{
+	std::cout << sizeof(std::size_t) << '\n';//size_t可以查询系统byte数
+
+	return 0;
+}
+```
