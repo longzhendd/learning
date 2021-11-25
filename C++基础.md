@@ -452,3 +452,800 @@ int main()
 	return 0;
 }
 ```
+```c++
+#include <iostream>
+
+int main()
+{
+    double zero {0.0};
+    double posinf { 5.0 / zero }; // positive infinity
+    std::cout << posinf << '\n';
+
+    double neginf { -5.0 / zero }; // negative infinity
+    std::cout << neginf << '\n';
+
+    double nan { zero / zero }; // not a number (mathematically invalid)
+    std::cout << nan << '\n';
+
+    return 0;
+}
+//结果
+inf正无穷
+-inf负无穷
+nan不确定数
+```
+### 4.9布尔值
+```c++
+#include <iostream>
+
+int main()
+{
+	std::cout <<std::boolalpha;	//输出是打印true、false而不是0/1
+    bool b1{true};
+    bool b2{false};
+    bool b3{!true}; //等同于false
+    bool b4{!false}; //等同于true
+    bool b{5};//整数转bool；非0为true；0为false
+    std::cout << b1<< b2 << b3 << b4 << '\n';
+    std::cout <<b;//结果true
+    return 0;
+}
+//结果
+1001
+```
+```c++
+//输入布尔值：true/false,并成功打印
+#include <iostream>
+
+int main()
+{
+    std::cout << "enter a boolean value:";
+    bool b{};
+    std::cin >> std::boolalpha;
+    std::cin >> b;
+    std::cout << b;
+    return 0;
+}
+```
+```c++
+//返回布尔值
+bool isEqual(int a,int b)
+{
+    return (a==b);
+}
+int main()
+{
+    std::cout << "enter an integer:";
+    int x{};
+    std::cin >> x;
+
+    std::cout << "enter another integer:";
+    int y{};
+    std::cin >> y;
+
+    std::cout << std::boolalpha;
+    std::cout << x << " and " << y << "are equal?";
+    std::cout << isEqual(x,y);
+    return 0;
+}
+```
+### 4.10字符
+```c++
+#include <iostream>
+
+int main()
+{
+    std::cout << "Input a keyboard character: ";
+
+    char ch{};
+    std::cin >> ch;
+    std::cout << "You entered: " << ch << '\n';
+    std::cout << static_cast<int>(ch);
+
+    return 0;
+}
+```
+### 4.11std::string
+```c++
+#include <iostream>
+#include <string>
+
+int main()
+{
+    // std::string myName{"alex"};
+    std::string myName="john";
+    std::cout <<myName;
+    return 0;
+}
+```
+```c++
+//std::getline(std::cin >> std::ws,para)
+#include <iostream>
+#include <string>
+
+int main()
+{
+    std::cout << "Enter your full name: ";
+    std::string name{};
+    std::getline(std::cin >> std::ws, name);//std::ws通知std::cin忽略前导空格
+
+    std::cout << "Enter your age: ";
+    std::string age{};
+    std::getline(std::cin >> std::ws, age);
+
+    std::cout << "Your name is " << name << " and your age is " << age << '\n';
+
+    return 0;
+}
+```
+```c++
+//string.length()返回是无符合整数需要进行数据类型转换
+#include <iostream>
+#include <string>
+
+int main()
+{
+    std::string myName{ "Alex" };
+    std::cout << myName.length() << '\n' << static_cast<int>(myName.length());
+    return 0;
+}
+```
+Q&A
+1. 编写一个程序，要求用户输入他们的全名和年龄。作为输出，告诉用户他们的年龄总和和他们名字中的字母数。为简单起见，将名称中的空格算作一个字母
+
+2. sizeof("hello ,world!")和string.length()结果不同？
+```c++
+#include <iostream>
+#include <string>
+
+int main()
+{
+    std::string name{"hello ,world!"};
+    int a{static_cast<int>(name.length())};
+    std::cout << a << '\n';
+    std::cout << sizeof("hello ,world!");
+    return 0;
+}
+```
+
+### 4.11Literals(文字常量)
+
+```c++
+//八进制和十六进制
+#include <iostream>
+#include <string>
+
+int main()
+{
+    int x{012};//result:10
+    int y{0xC};//result：12
+    std::cout << x << '\n' << y;
+    return 0;
+}
+```
+```c++
+//打印十/八/十六进制数
+```
+
+## 五、函数
+### 5.1 函数模板
+```c++
+#include<iostream>
+
+template <typename T> T
+/*
+typename 类型1,typename 类型2，....
+template <模板形参表>返回类型
+*/
+add(T a,T b)
+{
+    return a+b;
+}
+
+int main()
+{
+    std::cout << add(10,20) << '\n';
+    std::cout <<add(10.2,20.5) << '\n';
+    return 0;
+}
+```
+
+### 5.2 函数嵌套
+```c++
+#include<iostream>
+#include<cmath>
+
+double f(double x)
+{
+    return x*x*x-5*x*x+16*x-80;
+}
+double point(double a,double b)
+{
+    return (a*f(b)-b*f(a))/(f(b)-f(a));
+}
+double root(double a,double b)
+{
+    double x,y,y1;
+    y1=f(a);
+    do
+    {
+        x=point(a,b);
+        y=f(x);
+        if (y*y1>0) y1=y,a=x;
+        else b=x;
+    } while (fabs(y)>= 0.00001);
+    return x;
+}
+int main()
+
+{
+    double a,b;
+    std::cin >>a >> b;
+    std::cout << "root=" << root(a,b) << '\n';
+    return 0;
+}
+```
+### 5.3 函数递归
+```c++
+//汉若塔
+#include<iostream>
+
+void Hanoi(int n,char A,char B,char C)
+{
+    if(n==1) std::cout<< A << "->" <<C<< '\n';
+    else
+    {
+        Hanoi(n-1,A,C,B);
+        std::cout<< A << "->" <<C<< '\n';
+        Hanoi(n-1,B,A,C);
+    }
+}
+
+int main()
+{
+    int x;
+    std::cout << "输入X：";
+    std::cin >> x;
+    Hanoi(x,'A','B','C');
+}
+```
+
+## 六、数组
+**定义：**数组表示一组数据的集合，方便表示大数据，能够循环处理大量数据
+```
+//定长一维数组,实际元素可少于设定长度但不可大于
+int A[10]={1,2,3,4}
+//不定长,自动捕获数组长度，不设定
+int B[]={4,6,5}
+//二维数组一维表示法
+int A[2][3]={4,6,5}
+//二维数组二维表示法
+int A[2][3]={{1，3，6}，{8，9}}
+//静态数组不初始化，值默认为0；动态默认为随机数
+static int A[3]; //全是0
+int B[3];//全是随机数
+```
+### 6.1 数组遍历
+```
+#include<iostream>
+
+int main()
+{
+    int A[2][3]={1,2,3,4,5,6},AT[3][2],i,j;
+    for ( i = 0; i < 2; i++)
+        for (j = 0; j < 3; j++)
+            AT[j][i]=A[i][j];
+    std::cout << "A:"<<'\n';
+    for ( i = 0; i < 2; i++)
+    {
+        for (j = 0; j < 3; j++)
+        {
+            std::cout << A[i][j] << " ";
+        }
+        std::cout << '\n'; 
+    }
+    std::cout << "AT："<< '\n';
+    for ( i = 0; i < 3; i++)
+    {
+        for (j = 0; j < 2; j++)
+        {
+            std::cout << AT[i][j] << " ";
+        }
+        std::cout << '\n'; 
+    }
+    return 0;
+}
+```
+
+### 6.2 冒泡排序和选择排序
+```c++
+//冒泡
+#include<iostream>
+// using namespace std;
+#define N 10
+
+int main()
+{
+    int A[N],i,j,t;
+    for ( i = 0; i < N; i++) std::cin >>A[i];//输入数组
+    for ( j = 0; j < N-1; j++)
+    {
+        for (i = 0; i < N-1-j; i++)
+        {
+            if (A[i] > A[i+1])
+            {
+                t=A[i],A[i]=A[i+1],A[i+1]=t;
+            }
+        }
+    }
+    for (i = 0; i < N; i++) std::cout << A[i] << " ";
+    return 0;
+}
+```
+```c++
+//选择排序
+#include<iostream>
+#include<ctime>
+
+void SelectionSort(int A[],int n)
+{
+    int i,j,k,t;
+    for ( i = 0; i < n-1; i++)
+    {
+        k=i;
+        for (j = i+1; j < n; j++)
+        {
+            if (A[j] < A[k]) k=j;
+        }
+        if (i!=k)
+        {
+            t=A[i],A[i]=A[k],A[k]=t;
+        }
+    }
+}
+
+#define N 10
+int main()
+{
+    int A[N],i;
+    srand((unsigned int)time(0));
+    for ( i = 0; i < N; i++)
+    {
+        A[i]=rand()%100;
+        std::cout <<A[i] << " ";
+    }
+    std::cout << '\n';
+    SelectionSort(A,N);
+    for ( i = 0; i < N; i++)
+    {
+        std::cout << A[i] << ' ';
+    }
+    return 0;
+}
+```
+
+### 6.3 顺序查找和二分查找
+```c++
+//顺序查找
+#include<iostream>
+int Search(int A[],int n,int find)
+{
+    int i;
+    for ( i = 0; i < n; i++)
+    {
+        if (A[i]==find) return i;  
+    }
+    return -1;
+}
+#define N 10
+int main()
+{
+    int A[N]={18,-3,-12,34,101,211,12,90,77,45},i,find;
+    std::cin >> find;
+    i=Search(A,N,find);
+    if(i>=0) std::cout << "A[" << i << "]=" << find << '\n';
+    else std::cout << "not found" << '\n';
+    return 0;
+}
+//二分查找
+#include<iostream>
+
+int BinarySearch(int A[],int n,int find)
+{
+    int low,upper,mid;
+    low=0,upper=n-1;
+    while (low<=upper)
+    {
+        mid=low+(upper-low)/2;
+        if(A[mid]<find) low=mid+1;
+        else if(A[mid]>find) upper=mid-1;
+        else return mid;
+    }
+    return -1;
+}
+
+#define N 10
+int main()
+{
+    int A[N]={8,24,30,47,62,68,83,90,92,95},i,find;
+    std::cin >>find;
+    i=BinarySearch(A,N,find);
+    if(i>=0) std::cout << "A[" << i << "]=" << find << '\n';
+    else std::cout << "not found" << '\n';
+    return 0;
+}
+```
+## 七   指针
+### 7.1 指针的定义
+```c++
+//指针初始化 *指针变量名=地址初值
+int a;
+int *p=&a;
+//指针创建
+int a,8p;
+p=&a;
+//改变指向地址储存的值
+#include<iostream>
+int main()
+{
+    int a=10;
+    int *p;
+    p=&a;
+    *p=20;
+    std::cout << a;
+    return 0;
+}
+//指针const限定,不允许通过指针来改变const对象的值
+#include<iostream>
+int main()
+{
+    const int a=10;
+    const int *p;
+    p=&a;
+    *p=20;//fault
+    std::cout << a;
+    return 0;
+}
+//pc不能再指向其他对象,指向int对象的const指针
+int a=10,b=20;
+int *const pc=&a;
+pc=&b;//fault
+//指向const对象的const指针
+const double pi=3.1415;
+const double *const cpc =&pi;
+//cpc为指向const对象的const指针
+```
+### 7.2 指针与数组
+```c++
+//下面两等价
+int a[5],*p
+p=a;//1
+p=&a[0];//2
+//指针访问一维数组
+#include<iostream>
+int main()
+{
+    int a[5]={5,8,4,3,4},*p;
+    p=a;
+    p++;//8
+    p++;//4
+    std::cout <<*p;//4
+    return 0;
+}
+//通过指针变量间接访问数组元素
+#include<iostream>
+int main()
+{
+    int a[5]={5,8,4,3,4},*p;
+    for (p=a;p<a+5;p++) std::cout << *p << " ";
+    return 0;
+}
+//通过地址间接访问数组元素
+#include<iostream>
+int main()
+{
+    int a[5]={5,8,4,3,4},i;
+    for (i=0;i<5;i++) std::cout << *(a+i) << " ";
+    return 0;
+}
+```
+### 指针与字符串
+```c++
+//遍历字符串
+#include<iostream>
+int main()
+{
+    char str[]="C language",*p=str;
+    while (*p!='\0')
+    {
+        std::cout << *p++;
+    }
+    return 0;
+}
+//访问字符串
+#include<iostream>
+int main()
+{
+    char str[]="C language",*p=str;
+    std::cout << p << '\n';
+    std::cout << p+3 << '\n';
+    return 0;
+}
+```
+### 指针与函数
+最重要的应用:指针是函数参数传递的重要工具
+```c++
+//交换变量值,避免了全局变量
+#include<iostream>
+//交换两变量值
+void swap(int *p1,int *p2)
+{
+    int t;
+    t=*p1,*p1=*p2,*p2=t;
+}
+
+int main()
+{
+    int a,b;
+    std::cin>> a >> b;
+    if(a>b) swap(&a,&b);
+    std::cout << "min=" << a << ",max=" << b;
+    return 0;
+}
+//数组做为形参
+#include<iostream>
+
+double average(double *a,int n)
+{
+    double avg=0.0,*p=a;
+    int i;
+    for ( i = 0; i < n; i++,p++)
+    {
+        avg=avg+*p;
+    }
+    return n<=0? 0:avg /n;
+}
+int main()
+{
+    double A[5]={1,2,3,4,5};
+    std::cout<< "average=" << average(A,5) << '\n';
+    return 0;
+}
+```
+## 八  动态分配和内存
+### 8.1 new和delete
+```c++
+//new创建动态对象使用完成后，必须用delete进行销毁
+//delete只能销毁由new创建的动态对象，否则程序错误
+//避免出现迷途指针，释放内存后要及时设置为空指针
+#include<iostream>
+int *f1(int n)
+{
+    int *p,i;
+    p=new int[n];
+    for ( i = 0; i < n; i++)
+    {
+        // *(p+i)=i;
+        p[i]=i;
+    }
+    return p;
+}
+void f2(int *p,int n)
+{
+    while (n-->0)
+    {
+        std::cout << *p++ << " ";
+    }
+}
+void f3(int *p)
+{
+    delete [] p;
+}
+int main()
+{
+    int *pi;
+    pi=f1(5);
+    f2(pi,5);
+    f3(pi);
+    return 0;
+}
+```
+```c++
+#include<iostream>
+int main()
+{
+    int *p1;
+    char *pz1;
+    p1=new int;
+    pz1=new char[80];
+    delete p1;
+    delete [] pz1;
+}
+```
+### 动态分配数组
+```c++
+//计算n*n二维数组平均值
+
+#include<iostream>
+
+double AVE(double *A,int N)
+{
+    int i,j,sum;
+    for ( i = 0; i < N; i++)
+    {
+        for ( j = 0; j < N; j++)
+        {
+            sum=sum+*(A+i*N+j);
+        }
+    }
+    return sum/(N*N);
+}
+
+int main()
+{
+    int i,j,n=3;
+    double *A=new double[n*n];
+    for ( i = 0; i < n; i++)
+    {
+        for ( j = 0; j < n; j++)
+        {
+            std::cin >> *(A+i*n+j);
+        }
+    }
+    std::cout <<"AVE=" << AVE(A,n) << '\n';
+    delete [] A;
+    return 0;
+}
+```
+### 动态分配字符串
+```c++
+#include<iostream>
+int main()
+{
+    char *p= new char [1000];//分配字符串空间
+    std::cin>>p;//输入
+    std::cout <<p;//输出
+    delete [] p;//释放空间
+}
+```
+
+## 九  结构体
+* 结构体对象允许赋值,不能算术运算
+### 9.1 结构体和数组
+```c++
+#include<iostream>
+#define N 2
+struct tagSTUDENT
+{
+    int no;
+    char name[21];
+    double score;
+} A[N],t;//定义对象
+//结构体与数组
+int main()
+{
+    // tagSTUDENT A[N],t;
+    int i,j;
+    for (i=0;i<N;i++) std::cin >> A[i].no>>A[i].name>>A[i].score;
+    for (i=0;i<N-1;i++)
+    for (j=1;j<N;j++)
+        if (A[i].score<A[j].score||(A[i].score==A[j].score && A[i].no>A[j].no))
+        {
+            t=A[i],A[i]=A[j],A[j]=t;
+        }
+    for ( i = 0; i < N; i++)
+    {
+        std::cout <<A[i].no << "," <<A[i].name << "," <<A[i].score << '\n';
+    }
+    return 0;
+}
+
+```
+### 9.2 结构体和指针
+```c++
+//指针法（p->成员）
+//对象法（(*p).成员）
+#include<iostream>
+struct DATE
+{
+    int year,month,day;
+} d={1981,1,1};
+struct TEACHER
+{
+    int no;
+    char name[21];
+    DATE *pbirthday;
+} a={1001,"lifdf",&d},*p=&a;
+
+int main()
+{
+    std::cout << p->no << " " <<  a.no << " " << (*p).name<<'\n';
+    std::cout << p->pbirthday->year <<" "<< (*p).pbirthday->month;
+    return 0;
+}
+```
+### 9.3 结构体和函数
+```c++
+//结构体对象为实参传递给函数
+struct DATA
+{
+    int data;
+    char name[10];
+};
+void fun1(DATA x);
+void fun2()
+{
+    DATA a={1,"dfjkd"};
+    fun1(a);
+}
+//结构体数组为函数实参
+struct DATA
+{
+    int data;
+    char name[10];
+};
+void fun1(DATA x[]);
+void fun2()
+{
+    DATA A[]={1,"dfjkd",2,"dfjdkgf"};
+    fun1(A);
+}
+//结构体指针为实参
+struct DATA
+{
+    int data;
+    char name[10];
+};
+void fun1(DATA *p);
+void fun2()
+{
+    DATA a={1,"dfjkd"};
+    fun1(&a);
+}
+//函数返回类型是结构体
+struct DATA
+{
+    int data;
+    char name[10];
+};
+DATA fun8()
+{
+    DATA a={1,"dfdf"};
+    return a;//返回结构体对象
+}
+void fun9()
+{
+    DATA b;
+    b=fun8();
+}
+```
+
+### 共用体类型
+```c++
+#include<iostream>
+union A//共用体共用内存空间
+{
+    int m;
+    char a,b;
+    short n;
+};
+
+int main()
+{
+    union A x={ 5678 };
+    std::cout <<sizeof(x.m) <<" "<< x.m << '\n';
+    std::cout <<sizeof(x.n) <<" "<< x.n  << '\n';
+    std::cout <<sizeof(x.a) <<" "<< x.a << '\n';
+    std::cout <<sizeof(x.b) <<" "<< x.b << '\n';
+    return 0;
+}
+```
+
+### 枚举类型
+```c++
+enum COLORS {RED=10,GREEN=8,BLUE,BLACK,WHITE};
+//blue=9,black=10,white=11
+enum COLORS {RED,GREEN,BLUE,BLACK,WHITE};
+//不指定.red=0,green=1....white=4
+typedef char byte;//声明一个新类型名代替已有类型
+```
