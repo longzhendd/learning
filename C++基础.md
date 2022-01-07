@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [TOC]
 [学习网站链接]: https://www.learncpp.com/
 
@@ -628,16 +629,23 @@ int main()
 ```
 
 ## 五、函数
-### 5.1 函数模板
+### 5.1 内联函数
 ```c++
 #include<iostream>
-
-template <typename T> T
+inline int add(int a,int b)//内联函数不允许循环和switch语句
+{
+    return a+b;
+}
+```
+### 5.2 函数模板
+```c++
+#include<iostream>
 /*
 typename 类型1,typename 类型2，....
-template <模板形参表>返回类型
+template <模板形参表>返回类型 函数名
 */
-add(T a,T b)
+template <typename T> 
+T add(T a,T b)
 {
     return a+b;
 }
@@ -650,7 +658,7 @@ int main()
 }
 ```
 
-### 5.2 函数嵌套
+### 5.3 函数嵌套
 ```c++
 #include<iostream>
 #include<cmath>
@@ -685,7 +693,7 @@ int main()
     return 0;
 }
 ```
-### 5.3 函数递归
+### 5.4 函数递归
 ```c++
 //汉若塔
 #include<iostream>
@@ -712,7 +720,7 @@ int main()
 
 ## 六、数组
 **定义：**数组表示一组数据的集合，方便表示大数据，能够循环处理大量数据
-```
+```c++
 //定长一维数组,实际元素可少于设定长度但不可大于
 int A[10]={1,2,3,4}
 //不定长,自动捕获数组长度，不设定
@@ -726,7 +734,7 @@ static int A[3]; //全是0
 int B[3];//全是随机数
 ```
 ### 6.1 数组遍历
-```
+```c++
 #include<iostream>
 
 int main()
@@ -877,12 +885,13 @@ int main()
 ```
 ## 七   指针
 ### 7.1 指针的定义
+* 数据指针、函数指针、数据成员指针、成员指针不能相互转换，复习
 ```c++
 //指针初始化 *指针变量名=地址初值
 int a;
 int *p=&a;
 //指针创建
-int a,8p;
+int a,*p;
 p=&a;
 //改变指向地址储存的值
 #include<iostream>
@@ -1062,7 +1071,7 @@ int main()
     delete [] pz1;
 }
 ```
-### 动态分配数组
+### 8.2 动态分配数组
 ```c++
 //计算n*n二维数组平均值
 
@@ -1097,12 +1106,12 @@ int main()
     return 0;
 }
 ```
-### 动态分配字符串
+### 8.3 动态分配字符串
 ```c++
 #include<iostream>
 int main()
 {
-    char *p= new char [1000];//分配字符串空间
+    char *p= new char[1000];//分配字符串空间
     std::cin>>p;//输入
     std::cout <<p;//输出
     delete [] p;//释放空间
@@ -1220,7 +1229,7 @@ void fun9()
 }
 ```
 
-### 共用体类型
+### 9.4 共用体类型
 ```c++
 #include<iostream>
 union A//共用体共用内存空间
@@ -1241,7 +1250,7 @@ int main()
 }
 ```
 
-### 枚举类型
+### 9.5 枚举类型
 ```c++
 enum COLORS {RED=10,GREEN=8,BLUE,BLACK,WHITE};
 //blue=9,black=10,white=11
@@ -1249,3 +1258,476 @@ enum COLORS {RED,GREEN,BLUE,BLACK,WHITE};
 //不指定.red=0,green=1....white=4
 typedef char byte;//声明一个新类型名代替已有类型
 ```
+
+## 十 链表
+### 10.1 单链表
+
+```c++
+//头插法
+//头插法创建链表
+#include<iostream>
+typedef int ElemType;
+struct LNode
+{
+    ElemType data;
+    LNode *next;
+};
+/*int *p//指针类型是int**/
+typedef LNode* LinkList;//LNode* 指向节点的指针类型
+void input(ElemType *ep)
+{
+    std::cin >> *ep;
+}
+
+void CreateLinkF(LinkList *L,int n,void(*input)(ElemType*))//*input指向函数
+{
+    LinkList s;
+    int i;
+    *L =new LNode;
+    (*L)->next=nullptr;
+    for (i = 0; i < n; i++)
+    {
+        s=new LNode;
+        input(&s->data);
+        s->next=(*L)->next;
+        (*L)->next=s;
+    }
+    
+
+}
+
+int main()
+{
+    LinkList L;
+    int n;
+    std::cin >> n;
+    CreateLinkF(&L,n,input);//L已经是指针，函数传&L传的指针的地址，函数接收指针的指针
+}
+```
+```c++
+//尾插法
+#include<iostream>
+typedef int ElemType;
+
+struct LNode
+{
+    ElemType data;
+    LNode *next;
+};
+
+typedef LNode* LinkList;
+void input(ElemType *ep)
+{
+    std::cin >> *ep;
+}
+void CreateLinkR(LinkList *L, int n,void(*input)(ElemType*))
+{
+    LinkList p,s;
+    int i;
+    p=new LNode;
+    for ( i = 0; i < n; i++)
+    {
+        s=new LNode;
+        input(&s->data);
+        p->next=s,p=s;
+    }
+    p->next=nullptr;
+}
+void DestroyList(LinkList *L)//销毁链表
+{
+    LinkList q,p=*L;
+    while (p!=nullptr)
+    {
+        q=p->next;
+        delete p;
+        p=q;
+    }
+    *L=NULL;
+}
+
+int main()
+{
+    LinkList L;
+    int n;std::cout>>n;
+    CreateLinkR(&L,n,input);
+    return 0;
+}
+```
+
+### 10.2 链表遍历
+1. 通过头指针L先访问节点p=L->next；然后令p=p->next指向后继节点如此循环访问链表全部结点
+2. 链表遍历算法实现步骤
+	* 令指针p指向L开始结点
+	* p为0后，表示已到链尾
+	* p指向后继结点，即p=p->next，防止重复
+```c++
+void visit(ElemType *ep)
+{
+    std::cout << *ep << " ";
+}
+
+void ListTraverse(LinkList L,void(*visit)(ElemType*))
+{
+    LinkList p=L->next;
+    while (p!=nullptr)
+    {
+        visit(&(p->data));
+        p->next;
+    }
+}
+```
+### 10.3 查找结点
+```c++
+int compare(ElemType *ep1,ElemType *ep2)
+{
+    if (*ep1 == *ep2) return 1;
+    return 0;
+}
+
+int LocateElem(LinkList L,ElemType e,int(*compare)(ElemType*,ElemType*))
+{
+    int i=0;
+    LinkList p=L->next;
+    while (p!=nullptr)
+    {
+        i++;
+        if (compare(&(p->data),&e)) return i;
+        p=p->next;
+    }
+    return 0;
+}
+```
+
+### 10.4 插入结点
+```c++
+int ListInsert(LinkList *L,int i,ElemType e)
+{
+    LinkList s,p=*L;
+    while (p!=nullptr && i>1)
+    {
+        p=p->next;
+        i--;
+    }
+    if(p==nullptr|| i<1) return 0;
+    s=new LNode;
+    s->data =e;
+    s->next =p->next,p->next=s;
+    return 1;
+}
+```
+
+### 10.5 删除结点
+```c++
+int ListDelete(LinkList *L,int i,ElemType *ep)
+{
+    LinkList p=nullptr,q=*L;
+    while (q!=nullptr && i>=1)
+    {
+        p=q;
+        q=q->next;
+        i--;
+    }
+    if (p==nullptr||q==nullptr) return 0;
+    p->next=q->next;
+    if(ep!=nullptr) *ep=q->data;
+    delete q;
+    return 1;
+}
+```
+
+## 十一 预处理命令
+### 11.1 不带参数宏定义
+### 11.2 带参数的宏定义
+```c++
+#include <iostream>
+#define PI 3.14.5926//不带参数宏
+#define mix(a,b) (((a)>(b))? (a):(b))//带参数宏
+int main()
+{
+    int a=8,b=2;
+    std::cout << mix(a,b);
+    return 0;
+}
+```
+### 11.3 #和##预处理运算
+```c++
+#include<iostream>
+#define PRI_MSG1(x) printf(#x);
+#define PRI_MSG2(x) printf(x);
+#define PRI_MSG3(x) A##x=x;
+PRI_MSG3(1);//替换为A1=1
+```
+### 11.4 文件包含
+```c++
+#include <xxxx>
+#include "xx.h"
+```
+### 11.5 条件编译
+```c++
+//#ifdef条件编译
+#ifndef TEST
+	。。。
+#endif
+//第二种
+#ifdef TEXT
+	...
+#else
+	...
+#endif
+```
+```c++
+//if条件
+#if
+
+#else
+
+#endif
+//second
+#if
+
+#elseif
+
+#else
+
+#endif
+```
+
+## 十二 类
+### 12.1定义类及成员的访问
+```c++
+#include<iostream>
+
+class Data
+{//类定义：一般放在程序开头或者头文件中
+    void set(int d);//h函数原型
+    int get()
+    {
+        return data;
+    }
+    int data;
+};
+
+void Data::set(int d)
+{
+    data=d;
+}
+```
+```c++
+class Data
+{
+    int a,b;
+//顺序通常是：public,protected,private
+public://类成员和类用户都能访问，公用
+    void ste(int i,int j,int k,int l,int m,int n)
+    {a=i,b=j,c=k,d=l,e=m,f=n}
+protected://与private性质一致，但是能被派生类访问
+    int c,d;
+private://只有类成员可以访问，隐私
+    int e,f;
+};
+```
+
+### 12.2类的数据成员、类的成员函数、类的声明
+```c++
+class Data
+{
+    long color;
+    double x,y,z,side;//数据成员
+    void set(int a,int b);
+    struct Point//结构体定义
+    {
+        int x,y;
+    };
+    typedef Point* LPPoINT;//声明
+    inline int gety(){ return y;}//内联函数
+    inline void setxy(int _x,int _y);
+    void display();
+};
+
+void Data::set(int a,int b)//外部定义类函数
+{
+    data=a+b;
+}
+void Data::setxy(int _x,int _y)
+{
+    x=_x,y=_y;
+}
+void Data::display()
+{
+    //
+}
+```
+```c++
+class Point;
+class Line{
+    Point a;//false，没有定义
+    Point *pp,&rp;//类可以定义定义该类的指针或引用
+    Line b;//false
+    Line *p1,&r1;//类可以指向自身类型的指针或引用数据成员
+}
+```
+
+### 12.3 构造函数定义
+构造函数是为了初始化参数，列表只能放在函数定义中，不能放在函数声明中
+函数名 （形参）：初始化列表 {函数体}
+```c++
+#include<iostream>
+class Cuboid
+{
+public:
+    Cuboid(int l,int h,int d);
+    int volumn() {return length*height*depth;}
+private:
+    int lenght,height,depth;
+};
+//构造函数初始化列表
+Cuboid::Cuboid(int l,int h,int d) : lenght(l),height(h),depth(d)
+{
+    std::cout << "Cuboid: " << "L=" << l<<",H="<<h<<".D="<<d<<'\n';
+}
+
+
+```
+### 12.4 构造函数重载
+```c++
+//注意：有默认参数的可以不给实参，此时与无参数的构造函数产生歧义，重载可能产生问题
+#include<iostream>
+class Point
+{
+public:
+    Point() {x=y=0;}
+    Point(int a,int b) : x(a),y(b) {}
+    void display() {std::cout << "x="<<x<<",y=" <<y<<'\n';}
+private:
+    int x,y;
+};
+
+int main()
+{
+    Point m;
+    m.display();
+    Point n(1,2);
+    n.display();
+    return 0;
+}
+```
+### 12.5 默认构造函数和隐式转换
+* 构造函数在定义对象后会先调用
+```c++
+#include<iostream>
+#include<string>
+class Data
+{
+public:
+    Data(const std::string& str="") : s1(str) { }
+    //构造函数的一般形式：类名(const 指定数据类型& obj)
+    void SetString(const Data& r)
+    {s1=r.s1;}
+    void print() {std::cout << s1 << '\n';}
+private:
+    std::string s1;
+};
+int main()
+{
+    Data a,b,c("world");
+    std::string i="string";
+    a.SetString(c);
+    b.SetString(std::string("world"));
+    a.print();
+    b.print();
+    Data d=Data(i);//将string转换Data对象隐式转换
+    d.print();
+    return 0;
+}
+```
+```c++
+//类名(const 指定类型& obj)
+//类名(要转换的数据类型)调用
+```
+### 12.6 复制构造函数与合成构造函数
+* 一般没必要用限定符const
+```
+Point pt1(10,20);
+Point pt2=pt2;复制初始化，调用复制构造函数
+Point pt3(pt1);直接初始化，调用与实参匹配的构造函数
+```
+```c++
+#include<iostream>
+#include <string.h>
+class CA
+{
+public:
+    CA(int b,char *cstr)
+    {
+        a=b;str=new char[b];
+        strcpy(str,cstr);
+    }
+    CA(const CA &C)
+    {
+        a=C.a;str=new char[a];
+        if(str!=0) strcpy(str,C.str);
+    }
+    void show()
+    {
+        std::cout << str << '\n';
+    }
+    ~CA()
+    {
+        delete str;
+    }
+private:
+    int a;char *str;
+};
+int main()
+{
+    CA a(10,"hello");
+    CA b=a;
+    b.show();
+    return 0;
+}
+```
+
+### 12.7 析构函数
+* 一个类只能有一个析构函数
+* 析构函数在类有指针复制操作时编写
+* 结束整个程序析构函数类会调用
+* 先构造的后析构，后构造的先析构
+```c++
+#include<iostream>
+#include<string.h>
+
+class CString
+{
+public:
+    CString(const char *str);
+    ~CString();
+    void show() {std::cout << p << '\n';}
+private:
+    char *p;
+};
+
+CString::CString(const char *str)
+{
+    p=new char[strlen(str)+1];
+    strcpy(p,str);
+    std::cout << "构造:" << str << '\n';
+}
+
+CString::~CString()
+{
+    std::cout<< "析构：" <<p<<'\n';
+    delete [] p;
+}
+
+int main()
+{
+    CString s1("C++"),s2="JavaScript";
+    s1.show();s2.show();
+    return 0;
+}
+```
+### 12.8 对象数组和对象指针
+* 成员指针与类的类型和成员类型有关，只应用于类的非静态成员
+* 成员函数后面加const就不能改变数据成员的值`char get() const;`
+* this指针代表类的对象
+* 
