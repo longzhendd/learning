@@ -383,7 +383,36 @@ int add(int x, int y);
 #endif
 ```
 
-## 三、调试
+## 三、循环
+### 3.1 while
+```c++
+//满足条件后执行代码块
+while(condition)
+{
+   statement(s);
+}
+```
+### 3.2 for
+```
+//初始化后判断条件才执行代码块
+for ( init; condition; increment )
+{
+   statement(s);
+}
+```
+### 3.3 do...while
+```
+//先执行代码块，再判断条件
+do
+{
+   statement(s);
+
+}while( condition );
+```
+### 3.4 循环控制符
+1. break 终止循环
+2. continue 进入下次循环
+3. goto 不推荐
 ## 四、基本数据类型
 ```c++
 #include <iostream>
